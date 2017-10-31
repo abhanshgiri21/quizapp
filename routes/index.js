@@ -40,7 +40,8 @@ router.post('/login', function(req, res, next){
 router.post('/signup', function(req, res, next){
 	var username = req.body.username;
 	var password = req.body.password;
+	
 
-})
+});
 
 module.exports = router;
