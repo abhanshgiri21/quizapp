@@ -8,6 +8,6 @@ User.getUserByUsername = function(username, callback){
     callback(null, true);
 }
 User.checkPassword = function(pass, callback){
-    callback(null, false);
+    callback(null, true);
 }
 module.exports = User;
