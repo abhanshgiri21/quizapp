@@ -2,12 +2,22 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/quizapp');
 var db = mongoose.connection;
 
-var User = {};
+var UserSchema = mongoose.Schema({
+    username:{
+        type:String,
+        required: true
+    },
+    password:{
+        type:String,
+        required:true,
+        bcrypt:true
+    }
+});
 
-User.getUserByUsername = function(username, callback){
+module.exports.getUserByUsername = function(username, callback){
+    User.findOne({username:username}, callback);
+}
+module.exports.checkPassword = function(pass, callback){
     callback(null, true);
 }
-User.checkPassword = function(pass, callback){
-    callback(null, true);
-}
-module.exports = User;
+var User = module.exports = mongoose.model('User',UserSchema);

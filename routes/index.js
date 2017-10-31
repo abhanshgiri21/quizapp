@@ -21,7 +21,7 @@ router.post('/login', function(req, res, next){
           return res.send({msg: 'no user was found with this username'});
         }
 
-        User.checkPassword(password, function(err, user){
+        User.checkPassword(user, password, function(err, result){
           if (err) {
             throw err;
             return null;
@@ -36,5 +36,11 @@ router.post('/login', function(req, res, next){
     });
 
 });
+
+router.post('/signup', function(req, res, next){
+	var username = req.body.username;
+	var password = req.body.password;
+
+})
 
 module.exports = router;
