@@ -16,7 +16,21 @@ var UserSchema = mongoose.Schema({
     usertype:{
         type:String,
         required:true
-    }
+    },
+    branch:{
+        type:String
+    },
+    scores:[{
+        date:{
+            type:Date
+        },
+        subject:{
+            type:String
+        },
+        score:{
+            type:String
+        }
+    }]
 });
 
 var User = module.exports = mongoose.model('User',UserSchema);
@@ -44,3 +58,11 @@ module.exports.createUser = function (newUser, callback) {
     });
 
 };
+
+module.exports.findResultByBranch = function(branch, callback){
+    User.find({branch:branch}, callback);
+}
+
+module.exports.insertscores = function(id, newScore, callback){
+    User.findOneAndUpdate({_id : id}, {$push : {'scores' : newScore}}, {safe:true, upsert:true}, callback);
+}

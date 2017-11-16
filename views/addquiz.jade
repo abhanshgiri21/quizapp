@@ -1,0 +1,59 @@
+doctype html
+html(lang='en')
+  head
+    title AddQuestions
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='/css/bootstrap.css')
+    link(rel='stylesheet', href='/css/main2.css')
+    script(src='/js/jquery.js')
+    script(src='/js/popper.js')
+    script(src='/js/bootstrap.js')
+  body
+    nav.navbar.navbar-expand-sm.bg-dark.navbar-dark
+      p
+        a.navbar-brand(href='#') QUIZAPP
+      ul.navbar-nav
+        li.nav-item
+          p
+            a.nav-link(href='#') HOME
+        li.nav-item
+          p
+            a.nav-link(href='#') ABOUT
+        li.nav-item
+          p
+            a.nav-link(href='#') FAQ
+    .login-block2
+      .container
+        .row
+          h1#addquizheading  Add Quiz
+          br
+          .dropdown
+            .addquizmenu
+                if cats
+                    each cat, i in cats
+                        a.btn.btn-danger(href="/admin/addquiz/#{cat.cat}") #{cat.cat}
+                        br
+        .row
+        .login-block1
+          h1 Active Quizzes
+          br
+          each quiz, i in quizzes
+            h3 #{quiz.quizname}
+            a.btn.btn-danger.removeQuiz(data-id="#{quiz._id}" href="") Delete
+            br
+        p#quizdata
+  script(type='text/javascript').
+    $(document).ready(function(){
+        $('.removeQuiz').click(function(e){
+            deleteId=$(this).data('id');
+            $.ajax({
+                url:'/admin/deletequiz/'+deleteId,
+                type:'DELETE',
+                success:function(data){
+                        console.log(data);
+                }
+            });
+            window.location = '/admin/addquiz'
+        });
+    });

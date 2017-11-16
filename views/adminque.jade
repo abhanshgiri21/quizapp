@@ -1,0 +1,58 @@
+doctype html
+html(lang='en')
+  head
+    title ViewQuestions
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='/css/bootstrap.css')
+    script(src='/js/jquery.js')
+    script(src='/js/popper.js')
+    script(src='/js/bootstrap.js')
+    link(rel='stylesheet', href='/css/main2.css')
+  body
+    nav.navbar.navbar-expand-sm.bg-dark.navbar-dark
+      p
+        a.navbar-brand(href='#') QUIZAPP
+      ul.navbar-nav
+        li.nav-item
+          p
+            a.nav-link(href='#') HOME
+        li.nav-item
+          p
+            a.nav-link(href='#') ABOUT
+        li.nav-item
+          p
+            a.nav-link(href='#') FAQ
+    .login-block2
+      .container
+        .row
+          each que, i in ques
+            .dropdown#viewquesdropdown
+              button.dropbtn
+                | #{que.ques} &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                a(href="#" ,class="btn btn-danger removeQues" data-id="#{que._id}" ) Delete
+              .dropdown-content
+                p #{que.op1}
+                br
+                p #{que.op2}
+                br
+                p #{que.op3}
+                br
+                p #{que.op4}
+                br
+                p ans is option :  #{que.ans}
+            br
+  script(type='text/javascript').
+    $(document).ready(function(){
+        $('.removeQues').click(function(e){
+            deleteId=$(this).data('id');
+            $.ajax({
+                url:'/admin/delete/'+deleteId,
+                type:'DELETE',
+                success:function(data){
+                        console.log(data);
+                }
+            });
+            window.location = '/admin/viewques'
+        });
+    });

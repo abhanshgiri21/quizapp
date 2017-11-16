@@ -1,11 +1,11 @@
 doctype html
 html(lang='en')
   head
-    title Login
+    title AddAdmin
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(rel='stylesheet', href='css/bootstrap.css')
-    link(rel='stylesheet', href='css/main.css')
+    link(rel='stylesheet', href='/css/bootstrap.css')
+    link(rel='stylesheet', href='/css/main.css')
     script(src='js/jquery.js')
     script(src='js/popper.js')
     script(src='js/bootstrap.js')
@@ -28,11 +28,10 @@ html(lang='en')
     .container
       .row
         .login-block
-          h1 Login
-          form(action='/users/login', method='post')
-            input#username(type='text', value='', placeholder='Username' name="username")
+          h1 Add Admin
+          form(action="/admin/addadmin" method="post")
+            input#Name(type='text', value='', placeholder='Name' name="username")
             input#password(type='password', value='', placeholder='Password' name="password")
+            input#password(type='password', value='', placeholder="Admin's password" name="password2")
             center
-              button(type='submit') Login
-              | &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-              a(href='/signup') New?Signup
+              button Add

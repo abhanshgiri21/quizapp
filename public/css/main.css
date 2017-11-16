@@ -322,30 +322,24 @@ body
     color: #000000;
 }
 
-#sidenav{
-    display:none;
+#dropdown-toggle1 ,#dropdown-toggle2{
+    width:40%;
 }
 
-#adminviewques{
-    display:none;
+.dropdown-menu1{
+    width:40%;
+    cursor:pointer;
+    text-align:center;
+    font-size: 18px;
+}
+.dropdown-menu2{
+    width:80%;
+    cursor:pointer;
+    text-align:center;
+    font-size: 18px;
 }
 
-#adminhome{
-    display:none;
-}
-
-#addadmin{
-    display:none;
-}
-
-#addques{
-    display:none;
-}
-
-#askques{
-    display:none;
-}
-
-#signup-block{
-    display:none;
+#dropdown-toggle1{
+    width:50%;
+    margin:20px;
 }

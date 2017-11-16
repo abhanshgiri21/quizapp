@@ -10,10 +10,6 @@ var QuizSchema = mongoose.Schema({
     duration:{
         type:Number,
         required:true
-    },
-    active:{
-        type:Boolean,
-        default:false
     }
 });
 
@@ -30,4 +26,8 @@ module.exports.addQuiz = function(newQuiz, callback){
 
 module.exports.getActiveQuizzes = function(callback){
     Quiz.find({}, {}, callback);
+}
+
+module.exports.delquiz = function(id, callback){
+    Quiz.findOneAndRemove({_id:id}, callback);
 }

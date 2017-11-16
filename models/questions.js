@@ -26,6 +26,10 @@ var QuestionSchema = mongoose.Schema({
     ans:{
         type:String,
         required:true
+    },
+    cat:{
+        type:String,
+        required:true
     }
 });
 
@@ -36,10 +40,13 @@ module.exports.addques = function(quesObj, callback){
     quesObj.save(quesObj, callback);
 }
 
-module.exports.getques = function(nskip, limit, callback){
+module.exports.getQuesByCat = function(cat, callback){
+    Ques.find({cat:cat}).exec(callback);
+}
+
+module.exports.getques = function(callback){
     console.log("getques caled");
-    cursor =  Ques.find().skip(nskip).limit(limit);
-    return cursor.exec(callback);
+    Ques.find({}, callback);
 }
 
 module.exports.delques = function(id, callback){

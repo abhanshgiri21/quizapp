@@ -2,13 +2,20 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/User');
 var Quiz = require('../models/Quiz');
+var Ques = require('../models/questions');
 
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+	Quiz.getActiveQuizzes(function(err, quizzes){
+		if(err){throw err};
+		res.render('user', {
+			user: req.user,
+			quizzes:quizzes
+		});
+	});
 });
 
 
@@ -23,22 +30,24 @@ passport.deserializeUser(function(id, done) {
     });
 });
 
+
+
 passport.use(new LocalStrategy(
     function (username, password, done) {
 		//console.log("local starrategy vcalloed");
         User.getUserByUsername( username, function (err, user) {
-			//console.log("username  called");
+			console.log("username  called");
 			if(err) return done(err);
-
+			console.log(user);
             if(!user){
-				//console.log("user not found");
+				console.log("user not found");
                 return done(null, false, {message: 'User with this username does not exist'});
             }
 
             User.comparePassword(user.password, password, function (err, isMatch) {
 				console.log("compare password called");
 				if(err) throw err;
-				//console.log("no errrrrrrrrrrrrr called");
+				console.log("no errrrrrrrrrrrrr called");
                 if(!isMatch){
 					//console.log("ismatch called");
                     return done(err, false, {message:'Incorrect Password'});
@@ -49,6 +58,30 @@ passport.use(new LocalStrategy(
         });
     }
 ));
+
+router.get('/startquiz/:quizname', function(req, res, next){
+	var quizname = req.params.quizname;
+	Ques.getQuesByCat(quizname, function(err, ques){
+		console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+		console.log(ques);
+		if(err){throw err};
+		//res.render('takequiz', {ques:ques});
+		res.send(ques);
+	});
+});
+
+router.get('/takequiz', function(req, res, next){
+	res.render('takequiz');
+})
+
+router.get('/quizques', function(req, res, next){
+	var id = req.params.id;
+	Quiz.findById({_id:id}, function(err, quiz){
+		if(err){throw err};
+		var ques = Ques.find({cat:quiz.quizname}).limit(10);
+		res.send(ques);
+	})
+})
 
 
 router.post('/login', function(req, res, next){
@@ -63,6 +96,8 @@ router.post('/login', function(req, res, next){
 	passport.authenticate('local', function(err, user, info) {
 		if (err) { return next(err); }
 		if (!user) { 
+			console.log("^^^^^^^^^^^^^^^^^^^^^^^^^");
+			console.log(user);
 			return res.send({
 				success: false,
 				msg:"this username does not exits"
@@ -71,12 +106,9 @@ router.post('/login', function(req, res, next){
 		req.logIn(user, function(err) {
 			if (err) { return next(err); }
 			if(user.usertype == "admin")	{
-				res.send(user);
+				res.redirect('/admin');
 			}else{
-				Quiz.getActiveQuizzes(function(err, quizzes){
-					if(err){throw err};
-					res.send(quizzes);
-				})
+				res.redirect('/users/')
 			}
 		});
 	})(req, res, next);
@@ -108,10 +140,13 @@ router.post('/login', function(req, res, next){
 
 });
 
+
+
 router.post('/signup', function(req, res, next){
 	var username = req.body.username;
 	var password = req.body.password;
 	var password2 = req.body.password2;
+	var branch = req.body.branch;
 	var usertype = "user";
 	
 	req.checkBody('username', 'username field is required').notEmpty();
@@ -134,14 +169,16 @@ router.post('/signup', function(req, res, next){
 				var newUser = new User({	
 					username: username,
 					password:password,
-					usertype:usertype
+					usertype:usertype,
+					branch:branch
 				});
 
 
 				User.createUser(newUser, function(err, user){
 					if (err) throw err;
 					console.log(user);
-					res.send('user was created');
+					//res.send('user was created');
+					res.redirect('/');
 				});
 			}
 		}
@@ -149,5 +186,33 @@ router.post('/signup', function(req, res, next){
 
 });
 
+router.get('/endquiz', function(req, res, next){
+	
+})
+
+router.post('/endquiz', function(req, res, next){
+	var score = req.body.score;
+	var subject = req.body.subject;
+	var date = Date.now();
+	var id = req.user._id;
+
+	var newScore = {
+		score:score,
+		subject: subject,
+		date:date
+	};
+
+	User.insertscores(id, newScore, function(err, data){
+		if(err){throw err};
+		res.send(score);
+	});
+})
+
+function isAuthenticated(req,res, next){
+	if(req.isAuthenticated()){return next()}
+	else{
+		res.redirect('/login');
+	}
+}
 
 module.exports = router;
