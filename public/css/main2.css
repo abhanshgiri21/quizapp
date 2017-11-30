@@ -146,3 +146,7 @@ body
 #homead{
     width:100px;
 }
+
+.dropdown-menu2 li{
+    cursor:pointer;
+}

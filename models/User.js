@@ -29,6 +29,9 @@ var UserSchema = mongoose.Schema({
         },
         score:{
             type:String
+        },
+        quizid:{
+            type: mongoose.Schema.Types.ObjectId
         }
     }]
 });
@@ -44,6 +47,7 @@ module.exports.comparePassword = function(password, candidatePassword, callback)
         console.log(isMatch);
         return callback(null, isMatch);
     });
+    //return callback(null, true);
 }
 
 module.exports.getUserById = function(id, callback){
@@ -56,6 +60,7 @@ module.exports.createUser = function (newUser, callback) {
         newUser.password = hash;
         newUser.save(newUser, callback);
     });
+    //newUser.save(newUser, callback);
 
 };
 
@@ -65,4 +70,30 @@ module.exports.findResultByBranch = function(branch, callback){
 
 module.exports.insertscores = function(id, newScore, callback){
     User.findOneAndUpdate({_id : id}, {$push : {'scores' : newScore}}, {safe:true, upsert:true}, callback);
+}
+
+module.exports.findBySubjectAndBranch = function(subject, branch, callback){
+    //this function was made to capitalize usernames
+    User.find({}, function(err, users){
+        console.log("inside first function");
+        for(var key in users){
+            if( true){
+                var user = users[key];
+                user.username = user.username.toUpperCase();
+                user.save(function(err){
+                    if(err)throw err;
+                });
+            }
+            
+        }
+    });
+    User.find({
+        branch:branch,
+        "scores.subject" : subject
+    },{
+        username:1,
+        "scores.subject":1,
+        "scores.score":1,
+        "scores.$":1        
+    }).sort('username').exec(callback);
 }

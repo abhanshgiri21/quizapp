@@ -9,8 +9,9 @@ var LocalStrategy = require('passport-local').Strategy;
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-	Quiz.getActiveQuizzes(function(err, quizzes){
+	Quiz.getActiveQuizzes(req.user, function(err, quizzes){
 		if(err){throw err};
+		console.log(quizzes); 
 		res.render('user', {
 			user: req.user,
 			quizzes:quizzes
@@ -59,14 +60,58 @@ passport.use(new LocalStrategy(
     }
 ));
 
-router.get('/startquiz/:quizname', function(req, res, next){
-	var quizname = req.params.quizname;
-	Ques.getQuesByCat(quizname, function(err, ques){
-		console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-		console.log(ques);
-		if(err){throw err};
-		//res.render('takequiz', {ques:ques});
-		res.send(ques);
+
+router.post('/login', function(req, res, next){
+	
+		var username = req.body.username.toUpperCase();
+		var password = req.body.password;
+		console.log(username);
+		console.log(username);
+		console.log(password);
+		console.log("login route is called");
+	
+	
+		passport.authenticate('local', function(err, user, info) {
+			if (err) { return next(err); }
+			if (!user) { 
+				console.log("^^^^^^^^^^^^^^^^^^^^^^^^^");
+				console.log(user);
+				return res.send({
+					success: false,
+					msg:"this username does not exits"
+				});
+			}
+			req.logIn(user, function(err) {
+				if (err) { return next(err); }
+				if(user.usertype == "admin")	{
+					res.redirect('/admin');
+				}else{
+					res.redirect('/users/')
+				}
+			});
+		})(req, res, next);
+	});
+
+router.get('/startquiz/:quizid', function(req, res, next){
+	var quizid = req.params.quizid;
+	console.log(quizid);
+	Quiz.getQuizName(quizid, function(err, quiz){
+		if(err)throw err;
+		var quizname = quiz.quizname;
+		console.log(quizname);
+		Ques.getQuesByCat(quizname, function(err, ques){
+			console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+			console.log(ques);
+			if(err){throw err};
+			//res.render('takequiz', {ques:ques});
+			var data = {
+				ques:ques,
+				quizid:quiz._id,
+				duration:quiz.duration
+			}
+			console.log(data);
+			res.send(data);
+		});
 	});
 });
 
@@ -79,79 +124,32 @@ router.get('/quizques', function(req, res, next){
 	Quiz.findById({_id:id}, function(err, quiz){
 		if(err){throw err};
 		var ques = Ques.find({cat:quiz.quizname}).limit(10);
-		res.send(ques);
+		var data = {
+			ques:ques,
+			quizid:id
+		}
+		console.log("####################");
+		console.log(data);
+		res.send(data);
 	})
 })
 
 
-router.post('/login', function(req, res, next){
-
-	var username = req.body.username;
-	var password = req.body.password;
-	console.log(username);
-	console.log(password);
-	console.log("login route is called");
-
-
-	passport.authenticate('local', function(err, user, info) {
-		if (err) { return next(err); }
-		if (!user) { 
-			console.log("^^^^^^^^^^^^^^^^^^^^^^^^^");
-			console.log(user);
-			return res.send({
-				success: false,
-				msg:"this username does not exits"
-			});
-		}
-		req.logIn(user, function(err) {
-			if (err) { return next(err); }
-			if(user.usertype == "admin")	{
-				res.redirect('/admin');
-			}else{
-				res.redirect('/users/')
-			}
-		});
-	})(req, res, next);
-
-	// User.getUserByUsername(username, function(err, user){
-	// 	if(err) throw err;
-
-	// 	if(!user){
-	// 	  return res.send({msg: 'no user was found with this username'});
-	// 	}
-
-	// 	User.comparePassword(user.password, password, function(err, result){
-	// 		if (err) {
-	// 			throw err;
-	// 			return null;
-	// 		}
-	// 		if(result){
-	// 			if(user.username  ==  'admin'){
-	// 				res.send('admin is now logged in');
-	// 			}else{
-	// 				res.send({msg:'You are now logged in'});
-	// 			}						
-	// 		}else{
-	// 			res.send({msg: 'Your password is wrong'});
-	// 		}
-
-	// 	});
-	// });
-
-});
 
 
 
 router.post('/signup', function(req, res, next){
-	var username = req.body.username;
+	var username = req.body.username.toUpperCase();
 	var password = req.body.password;
 	var password2 = req.body.password2;
 	var branch = req.body.branch;
 	var usertype = "user";
+	var captcha = req.body.captcha;
 	
 	req.checkBody('username', 'username field is required').notEmpty();
 	req.checkBody('password', 'password field is required').notEmpty();
 	req.checkBody('password2', 'confirm password field is required').notEmpty();
+	req.checkBody('captcha','You entered the wrong captcha').equals(req.session.captcha);
 
 	User.getUserByUsername(username, function(err, user){
 		if(err) throw err;
@@ -163,6 +161,8 @@ router.post('/signup', function(req, res, next){
 			var errors = req.validationErrors();
 
 			if(errors){
+				console.log(errors);
+				console.log(req.session.captcha);
 				req.flash('error', 'there was some error with the signup process');
 				res.send('there was some validation error');
 			}else{
@@ -195,12 +195,17 @@ router.post('/endquiz', function(req, res, next){
 	var subject = req.body.subject;
 	var date = Date.now();
 	var id = req.user._id;
-
+	var quizid = req.body.quizid;
+	console.log(req.body.quizid);
+	console.log(req.body.subject);
 	var newScore = {
 		score:score,
 		subject: subject,
-		date:date
+		date:date,
+		quizid:quizid
 	};
+
+	console.log(newScore);
 
 	User.insertscores(id, newScore, function(err, data){
 		if(err){throw err};

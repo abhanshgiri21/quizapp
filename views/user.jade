@@ -19,7 +19,7 @@ html(lang='en')
       ul.navbar-nav
         li.nav-item
           p
-            a.nav-link(href='#') HOME
+            a.navbar-brand(href='/users/') HOME
         li.nav-item
           p
             a.nav-link(href='#') ABOUT
@@ -32,7 +32,7 @@ html(lang='en')
           h1 Welcome #{user.username}- Select Quiz
           form
             each quiz, i in quizzes
-              a.homead.startquizbtn(data-id="#{quiz.quizname}" href="#") #{quiz.quizname}
+              a.homead.startquizbtn(data-id="#{quiz._id}" href="#") #{quiz.quizname}
               br
       .row#displayquizpull
         .login-block1
@@ -66,19 +66,22 @@ html(lang='en')
       $('.startquizbtn').click(function(e){
         //alert("click function called");
         e.preventDefault();
-        var quizname = $(this).data('id');
+        var quizid = $(this).data('id');
         $.ajax({
-          url : '/users/startquiz/' + quizname,
+          url : '/users/startquiz/' + quizid,
           type: 'GET',
           success: function(data){
             console.log(data);
             localStorage.setItem("data", JSON.stringify(data));
+            localStorage.setItem("quizid", JSON.stringify(data.quizid));
+            localStorage.setItem("duration", JSON.stringify(data.duration));
+            //localStorage.setItem("quizid", JSON.stringify(data.quizid));
             //- data = data;
             //- document.getElementById("displayquizpop").style.display = "none";
             //- document.getElementById("displayquizpull").style.display = "block";
           }
         })
-        window.location = '/users/takequiz'
+        window.location = '/users/takequiz';
       })
     });
     //- var i = 0 ;

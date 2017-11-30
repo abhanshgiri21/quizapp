@@ -18,7 +18,7 @@ html(lang='en')
       ul.navbar-nav
         li.nav-item
           p
-            a.nav-link(href='#') HOME
+            a.navbar-brand(href='/users/') HOME
         li.nav-item
           p
             a.nav-link(href='#') ABOUT
@@ -30,7 +30,7 @@ html(lang='en')
         .login-block
           h1 Login
           form(action='/users/login', method='post')
-            input#username(type='text', value='', placeholder='Username' name="username")
+            input#username(type='text', value='', placeholder='Enrollment' name="username")
             input#password(type='password', value='', placeholder='Password' name="password")
             center
               button(type='submit') Login

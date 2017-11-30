@@ -16,7 +16,7 @@ html(lang='en')
       ul.navbar-nav
         li.nav-item
           p
-            a.nav-link(href='#') HOME
+            a.navbar-brand(href='/admin/') HOME
         li.nav-item
           p
             a.nav-link(href='#') ABOUT
@@ -35,16 +35,27 @@ html(lang='en')
                         td scores
                     tbody
                         each res, i in results
-                            td #{i}
-                            td #{res.username}
-                            td #{res.scores[0].subject}
-                            td #{res.scores[0].score}
-            else
-                h1#addquizheading  Show results
+                            tr
+                                td #{i+1}
+                                td #{res.username}
+                                td #{res.scores[0].subject}
+                                td #{res.scores[0].score}
+
+            else if branches
+                h1#addquizheading  Select a Branch to view results
                 br
                 .dropdown
                     .addquizmenu
                         if branches
                             each branch, i in branches
                                 a.btn.btn-danger(href="/admin/viewscores/#{branch.branch}") #{branch.branch}
+                                br
+            else
+                h1#addquizheading  Select a Subject to view results
+                br
+                .dropdown
+                    .addquizmenu
+                        if subjects
+                            each quiz, i in subjects
+                                a.btn.btn-danger(href="/admin/viewscores/#{branch}/#{quiz.quizname}") #{quiz.quizname}
                                 br

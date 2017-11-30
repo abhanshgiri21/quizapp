@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var docx = require("docx");
+var officegen = require('officegen');
 var User = require('../models/User');
 var Ques = require("../models/questions");
 var Quiz = require('../models/Quiz');
@@ -33,7 +35,7 @@ router.get('/addadmin', function(req, res, next){
 })
 
 router.post('/addadmin', function(req, res, next){
-	var username = req.body.username;
+	var username = req.body.username.toUpperCase();
 	var password = req.body.password;
 	var password2 = req.body.password2;
 	var usertype = "admin";
@@ -163,7 +165,7 @@ router.post('/addcat', function(req, res, next){
 router.get('/addquiz', function(req, res, next){
     Cat.getCat(function(err, cats){
         if(err) {throw err};
-        Quiz.getActiveQuizzes(function(err, quizzes){
+        Quiz.getActive(function(err, quizzes){
             res.render('addquiz', {
                 cats : cats,
                 quizzes : quizzes
@@ -173,28 +175,37 @@ router.get('/addquiz', function(req, res, next){
     });
 });
 
+
+
 router.get('/addquiz/:quizname', function(req, res, next){
     var quizname = req.params.quizname;
-
     Ques.getQuesByCat(quizname, function(err, ques){
         if(err){throw err};
-        res.render('viewquiz', {
-            ques:ques,
-            topic:quizname
-        });
+        Branch.getBranch(function(err, branches){
+            if(err)throw err;
+            console.log(branches);
+            res.render('viewquiz', {
+                ques:ques,
+                topic:quizname,
+                branches:branches
+            });
+        })        
     });
 });
+
 
 router.post('/addquiz', function(req, res, next){
     var quizname = req.body.quizname;
     var duration = req.body.duration || 30;
+    var branch = req.body.branch;
     var active = true;
 
     req.checkBody('quizname',' Quizname cannot be empty').notEmpty();
     
     var newQuiz = new Quiz({
         quizname: quizname,
-        duration: duration
+        duration: duration,
+        branch:branch
     });
     console.log(newQuiz);
     console.log("addquiz functoin is called");
@@ -236,12 +247,22 @@ router.get('/viewscores', function(req, res, next){
 
 router.get('/viewscores/:branch', function(req, res, next){
     var branch = req.params.branch;
-    User.findResultByBranch(branch, function(err, results){
-        if(err){throw err};
-        res.render('adminresult',{
-            results:results
-        })
+    console.log(branch);
+    Quiz.findWithBranch(branch, function(err, results){
+        console.log(results);
+        res.render('adminresult', {branch:branch, subjects:results})
     })
+})
+
+
+router.get('/viewscores/:branch/:subject', function(req, res){
+    var subject = req.params.subject;
+    var branch = req.params.branch;
+    User.findBySubjectAndBranch(subject, branch, function(err, results){
+        if(err)throw err;
+        console.log(results);
+        res.render('adminresult', {results:results});
+    });
 })
 
 router.get('/addbranch', function(req, res, next){
@@ -274,6 +295,17 @@ router.post('/addbranch', function(req, res, next){
     }  
 })
 
+router.delete('/deletebranch/:id', function(req, res, next){
+    var id = req.params.id;
+    Branch.delBranch(id, function(err){
+        if(err){
+            throw err;
+            res.send(false);
+        }
+        res.send(true);
+    });
+});
+
 
 function  isAuthenticated(req, res, next){
     if(!req.user){
@@ -284,5 +316,225 @@ function  isAuthenticated(req, res, next){
     }
     res.redirect('/');
 }
+
+router.get('/quesdocx', function(req, res, next){
+    Quiz.getActive(function(err, quizzes){
+        res.render('quizresultdownload', {
+            quizzes:quizzes
+        })
+    })
+})
+
+router.get('/quesdocx/:quizname/:branch', function(req, res){
+    // //creating a new document
+    // var doc = new docx.Document();
+    // var quizname = req.params.quizname;
+
+    // //getting content to add to document
+    // Ques.getQuesByCat(quizname, function(err, results){
+    //     if(err)throw err;
+    //     for(var key in results){
+    //         var ques = new docx.Paragraph("Q" + key+1 + ". " + results[key].ques);
+    //         var op1 = new docx.Paragraph("a) " + results[key].op1);
+    //         var op2 = new docx.Paragraph("b) " + results[key].op2);
+    //         var op3 = new docx.Paragraph("c) " + results[key].op3);
+    //         var op4 = new docx.Paragraph("d) " + results[key].op4);
+    //         var ans = new docx.Paragraph("ans: " + results[key].ans);
+            
+    //         doc.addParagraph(ques);
+    //         doc.addParagraph(op1);
+    //         doc.addParagraph(op2);
+    //         doc.addParagraph(op3);
+    //         doc.addParagraph(op4);
+    //         doc.addParagraph(ans);
+    //     }
+    //     var exporter = new docx.ExpressPacker(doc, res);
+
+    //     exporter.pack(quizname + Date.now());
+    // })
+
+    var quizname = req.params.quizname;
+    var branch = req.params.branch;
+    Ques.getQuesByCat(quizname, function(err, results){
+        User.findBySubjectAndBranch(quizname, branch, function(err, userresults){
+            if(err)throw err;
+            var docx = officegen('docx');
+            var q=1;
+            var pObjx = docx.createP();
+            pObjx.addText ( 'QUESTIONS', { bold: true, underline: true } );
+            for(var key in results){
+                var pObj = docx.createP();
+                var pObj1 = docx.createP();
+                var pObj2 = docx.createP();
+                var pObj3 = docx.createP();
+                var pObj4 = docx.createP();
+                var pObj5 = docx.createP();
+                var pObj6 = docx.createP();
+                pObj1.addText("Q" + q + ". " + results[key].ques )
+                pObj2.addText("a) " + results[key].op1);
+                pObj3.addText("b) " + results[key].op2);
+                pObj4.addText("c) " + results[key].op3);
+                pObj5.addText("d) " + results[key].op4);
+                pObj6.addText("ans: " + results[key].ans);
+                pObj.addLineBreak();
+                q++;
+            }
+            function formatDate(date) {
+                var monthNames = [
+                "Jan", "Feb", "March",
+                "Apr", "May", "Jun", "Jul",
+                "Aug", "Sept", "Oct",
+                "Nov", "Dec"
+                ];
+            
+                var day = date.getDate();
+                var monthIndex = date.getMonth();
+                var year = date.getFullYear();
+            
+                return day + ' ' + monthNames[monthIndex] + ' ' + year;
+            }
+
+            docx.putPageBreak();
+
+            var table = [
+                [{
+                    val: "S.No.",
+                    opts: {
+                        align: "center",
+                        vAlign: "center",
+                        cellColWidth: 20,
+                        b:true,
+                        color:"000",
+                        sz: '25',
+                        shd: {
+                        fill: "ffffff"
+                        }
+                    }
+                },{
+                    val: "Enrollment No.",
+                    opts: {
+                        align: "center",
+                        vAlign: "center",
+                        color:"000",
+                        cellColWidth: 20,
+                        b:true,
+                        sz: '20',
+                        shd: {
+                        fill: "ffffff"
+                        }
+                    }
+                },{
+                    val: "Subject",
+                    opts: {
+                        align: "center",
+                        vAlign: "center",
+                        color:"000",
+                        cellColWidth: 20,
+                        b:true,
+                        sz: '20',
+                        shd: {
+                        fill: "ffffff"
+                        }
+                    }
+                },{
+                    val: "Scores",
+                    opts: {
+                        align: "center",
+                        vAlign: "center",
+                        color:"000",
+                        cellColWidth: 20,
+                        b:true,
+                        sz: '20',
+                        shd: {
+                        fill: "ffffff"
+                        }
+                    }
+                }],
+            ]
+            q = 1;
+            for(var l in userresults){
+                var x = [ 
+                    {
+                        "val":q, 
+                        "opts":{
+                            align: "center",
+                            vAlign: "center",
+                            color:"000",
+                            cellColWidth: 20,
+                            b:true,
+                            sz: '20',
+                            shd: {
+                            fill: "ffffff"
+                            }
+                        }
+                    }, 
+                    {
+                        "val":userresults[l].username,
+                        "opts":{
+                            align: "center",
+                            vAlign: "center",
+                            color:"000",
+                            cellColWidth: 20,
+                            b:true,
+                            sz: '20',
+                            shd: {
+                            fill: "ffffff"
+                            }
+                        }, 
+                    },
+                    {
+                        "val":userresults[l].scores[0].subject,
+                        "opts":{
+                            align: "center",
+                            vAlign: "center",
+                            color:"000",
+                            cellColWidth: 20,
+                            b:true,
+                            sz: '20',
+                            shd: {
+                            fill: "ffffff"
+                            }
+                        }
+                    },{
+                        "val":userresults[l].scores[0].score,
+                        "opts":{
+                            align: "center",
+                            vAlign: "center",
+                            color:"000",
+                            cellColWidth: 20,
+                            b:true,
+                            sz: '20',
+                            shd: {
+                            fill: "ffffff"
+                            }
+                        }
+                    }   
+                ];
+                table.push(x);
+                q++;
+            }
+            
+            var tableStyle = {
+                tableColWidth: 2000,
+                tableSize: 25,
+                tableColor: "fff",
+                tableAlign: "center",
+                color:"000",
+                tableFontFamily: "Comic Sans MS",
+                borders: true,
+                background:"fff"
+            }
+            
+            docx.createTable (table, tableStyle);
+
+
+            res.writeHead ( 200, {
+                "Content-Type": "application/vnd.openxmlformats-officedocument.documentml.document",
+                'Content-disposition': 'attachment; filename=' + quizname + formatDate(new Date()) + '.docx'
+            });
+            docx.generate(res);
+        });
+    })
+})
 
 module.exports = router;

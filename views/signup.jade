@@ -12,7 +12,7 @@ html(lang='en')
   body
     nav.navbar.navbar-expand-sm.bg-dark.navbar-dark
       p
-        a.navbar-brand(href='#') QUIZAPP
+        a.navbar-brand(href='/users/') QUIZAPP
       ul.navbar-nav
         li.nav-item
           p
@@ -38,6 +38,9 @@ html(lang='en')
               ul.dropdown-menu.dropdown-menu1
                 each branch, i in branches
                   li(value="#{branch.branch}") #{branch.branch}
+            p
+              #{captcha}
+            input(type='text' name='captcha')      
             input(type="hidden", name='branch', id="addquesans", value="")
             center
               button(type="submit") Signup

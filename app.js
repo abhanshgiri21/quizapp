@@ -9,6 +9,7 @@ var session = require('express-session');
 var expressValidator = require('express-validator');
 var flash = require('connect-flash');
 var LocalStrategy = require('passport-local').Strategy;
+var svgCaptcha = require('svg-captcha');
 
 var index = require('./routes/index');
 var users = require('./routes/users');

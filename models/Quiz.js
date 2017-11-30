@@ -10,6 +10,10 @@ var QuizSchema = mongoose.Schema({
     duration:{
         type:Number,
         required:true
+    },
+    branch:{
+        type:String,
+        required:true
     }
 });
 
@@ -24,10 +28,29 @@ module.exports.addQuiz = function(newQuiz, callback){
     });
 }
 
-module.exports.getActiveQuizzes = function(callback){
-    Quiz.find({}, {}, callback);
+module.exports.getActiveQuizzes = function(user, callback){
+    var ignore = [];
+    console.log(user.scores);
+    if(user.scores.length > 0){
+        for( var key in user.scores){
+            ignore.push(user.scores[0].subject);
+        }
+    }
+    Quiz.find({quizname:{$nin : ignore}, branch:{$eq : user.branch}}, {}, callback);
+}
+
+module.exports.getActive = function(callback){
+        
+    Quiz.find({}, callback);
 }
 
 module.exports.delquiz = function(id, callback){
     Quiz.findOneAndRemove({_id:id}, callback);
+}
+
+module.exports.getQuizName = function(id, callback){
+    Quiz.findOne({_id:id}, callback);
+}
+module.exports.findWithBranch = function(branch, callback){
+    Quiz.find({branch:branch}, {}, callback);
 }

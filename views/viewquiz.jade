@@ -24,7 +24,7 @@ html(lang='en')
       ul.navbar-nav
         li.nav-item
           p
-            a.nav-link(href='#') HOME
+            a.navbar-brand(href='/admin/') HOME
         li.nav-item
           p
             a.nav-link(href='#') ABOUT
@@ -62,6 +62,14 @@ html(lang='en')
                     li(value="3") 30
                     li(value="4") 60
                 input(type="hidden", name='duration', id="addquesans", value="")
+                br
+            .dropdown
+                button.btn.btn-danger.dropdown-toggle#dropdown-toggle2(type="button", data-toggle="dropdown") Select Branch
+                    span.caret
+                ul.dropdown-menu.dropdown-menu2
+                  each branch, i in branches
+                    li(value="#{branch.branch}") #{branch.branch}
+                input(type="hidden", name='branch', id="addquescat", value="")
                 br
             center
               button.btn.btn-danger(type='submit') Add
