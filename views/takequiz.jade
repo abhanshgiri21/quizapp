@@ -67,11 +67,11 @@ html(lang='en')
       var retrievedData = localStorage.getItem("data");
       var tdata = JSON.parse(retrievedData);
       var data = tdata.ques;
-      //var c = localStorage.getItem("duration");
+      var c = localStorage.getItem("duration");
       //var c = retrievedData.quiz.duration * 60;
       //var  c = parseInt(retrievedData.duration);
-      var c = 15;
-      c *= 60;
+      //var c = 15;
+      //c *= 60;
       console.log(c);
       var t;
       function timedCount(){
@@ -206,6 +206,7 @@ html(lang='en')
         console.log(score);
         quizid = quizid.replace(/['"]+/g, '');
         console.log(quizid);
+        localStorage.clear();
         $.ajax({
             url : '/users/endquiz',
             type : "POST",

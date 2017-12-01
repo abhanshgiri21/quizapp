@@ -74,14 +74,19 @@ html(lang='en')
             console.log(data);
             localStorage.setItem("data", JSON.stringify(data));
             localStorage.setItem("quizid", JSON.stringify(data.quizid));
-            localStorage.setItem("duration", JSON.stringify(data.duration));
+            if(localStorage.getItem("duration")){
+              
+            }else{
+              localStorage.setItem("duration", JSON.stringify(data.duration * 60));
+            }
+            
             //localStorage.setItem("quizid", JSON.stringify(data.quizid));
             //- data = data;
             //- document.getElementById("displayquizpop").style.display = "none";
             //- document.getElementById("displayquizpull").style.display = "block";
           }
         })
-        window.location = '/users/takequiz';
+       window.location = '/users/takequiz';
       })
     });
     //- var i = 0 ;

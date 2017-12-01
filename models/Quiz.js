@@ -14,6 +14,10 @@ var QuizSchema = mongoose.Schema({
     branch:{
         type:String,
         required:true
+    },
+    admin:{
+        type:mongoose.Schema.Types.ObjectId,
+        required:true
     }
 });
 
@@ -39,9 +43,8 @@ module.exports.getActiveQuizzes = function(user, callback){
     Quiz.find({quizname:{$nin : ignore}, branch:{$eq : user.branch}}, {}, callback);
 }
 
-module.exports.getActive = function(callback){
-        
-    Quiz.find({}, callback);
+module.exports.getActive = function(user, callback){
+    Quiz.find( { admin:{$eq : user._id} } , callback);
 }
 
 module.exports.delquiz = function(id, callback){

@@ -165,7 +165,7 @@ router.post('/addcat', function(req, res, next){
 router.get('/addquiz', function(req, res, next){
     Cat.getCat(function(err, cats){
         if(err) {throw err};
-        Quiz.getActive(function(err, quizzes){
+        Quiz.getActive(req.user, function(err, quizzes){
             res.render('addquiz', {
                 cats : cats,
                 quizzes : quizzes
@@ -198,14 +198,14 @@ router.post('/addquiz', function(req, res, next){
     var quizname = req.body.quizname;
     var duration = req.body.duration || 30;
     var branch = req.body.branch;
-    var active = true;
 
     req.checkBody('quizname',' Quizname cannot be empty').notEmpty();
     
     var newQuiz = new Quiz({
         quizname: quizname,
         duration: duration,
-        branch:branch
+        branch:branch,
+        admin:req.user._id
     });
     console.log(newQuiz);
     console.log("addquiz functoin is called");
