@@ -13,7 +13,7 @@ router.get('/', isAuthenticated, function(req, res){
 });
 
 router.get('/viewques', function(req, res, next){
-    Cat.getCat(function(err, cat){
+    Cat.getCat(req.user, function(err, cat){
         if(err){throw err};
         res.render('viewquesform', {cats: cat});
     })
@@ -81,7 +81,7 @@ router.post('/addadmin', function(req, res, next){
 });
 
 router.get('/addques', function(req, res, next){
-    Cat.getCat(function(err, cats){
+    Cat.getCat(req.user, function(err, cats){
         console.log(cats);
         res.render('addques', {cats:cats});
     })
@@ -143,7 +143,8 @@ router.post('/addcat', function(req, res, next){
     req.checkBody('cat', 'cat should not be empty').notEmpty();
     
     var newCat =new Cat ({
-        cat:cat
+        cat:cat,
+        admin:req.user._id
     });
 
     var errors = req.validationErrors();
@@ -163,7 +164,7 @@ router.post('/addcat', function(req, res, next){
 });
 
 router.get('/addquiz', function(req, res, next){
-    Cat.getCat(function(err, cats){
+    Cat.getCat(req.user, function(err, cats){
         if(err) {throw err};
         Quiz.getActive(req.user, function(err, quizzes){
             res.render('addquiz', {
@@ -318,7 +319,7 @@ function  isAuthenticated(req, res, next){
 }
 
 router.get('/quesdocx', function(req, res, next){
-    Quiz.getActive(function(err, quizzes){
+    Quiz.getActive(req.user, function(err, quizzes){
         res.render('quizresultdownload', {
             quizzes:quizzes
         })

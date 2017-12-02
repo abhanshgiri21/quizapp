@@ -6,6 +6,9 @@ var CategorySchema = mongoose.Schema({
     cat:{
         type:String,
         required: true
+    },
+    admin:{
+        type:mongoose.Schema.Types.ObjectId
     }
 });
 
@@ -16,9 +19,9 @@ module.exports.addCat = function(CatObj, callback){
     CatObj.save(CatObj, callback);
 }
 
-module.exports.getCat = function(callback){
+module.exports.getCat = function(user, callback){
     console.log("getCat caled");
-    Cat.find({}, callback);
+    Cat.find({admin:user._id}, callback);
 }
 
 module.exports.delCat = function(id, callback){
