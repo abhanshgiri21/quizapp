@@ -63,7 +63,7 @@ passport.use(new LocalStrategy(
 
 router.post('/login', function(req, res, next){
 	
-		var username = req.body.username.toUpperCase();
+		var username = req.body.username;
 		var password = req.body.password;
 		console.log(username);
 		console.log(username);
@@ -97,9 +97,9 @@ router.get('/startquiz/:quizid', function(req, res, next){
 	console.log(quizid);
 	Quiz.getQuizName(quizid, function(err, quiz){
 		if(err)throw err;
-		var quizname = quiz.quizname;
-		console.log(quizname);
-		Ques.getQuesByCat(quizname, function(err, ques){
+		var catid = quiz.catid;
+		console.log(catid);
+		Ques.getQuesByCat(catid, function(err, ques){
 			console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 			console.log(ques);
 			if(err){throw err};
@@ -107,6 +107,7 @@ router.get('/startquiz/:quizid', function(req, res, next){
 			var data = {
 				ques:ques,
 				quizid:quiz._id,
+				catid:catid,
 				duration:quiz.duration
 			}
 			console.log(data);
@@ -118,24 +119,6 @@ router.get('/startquiz/:quizid', function(req, res, next){
 router.get('/takequiz', function(req, res, next){
 	res.render('takequiz');
 })
-
-router.get('/quizques', function(req, res, next){
-	var id = req.params.id;
-	Quiz.findById({_id:id}, function(err, quiz){
-		if(err){throw err};
-		var ques = Ques.find({cat:quiz.quizname}).limit(10);
-		var data = {
-			ques:ques,
-			quizid:id
-		}
-		console.log("####################");
-		console.log(data);
-		res.send(data);
-	})
-})
-
-
-
 
 
 router.post('/signup', function(req, res, next){
@@ -196,13 +179,17 @@ router.post('/endquiz', function(req, res, next){
 	var date = Date.now();
 	var id = req.user._id;
 	var quizid = req.body.quizid;
+	var catid = req.body.catid;
+
+
 	console.log(req.body.quizid);
 	console.log(req.body.subject);
 	var newScore = {
 		score:score,
 		subject: subject,
 		date:date,
-		quizid:quizid
+		quizid:quizid,
+		catid:catid
 	};
 
 	console.log(newScore);

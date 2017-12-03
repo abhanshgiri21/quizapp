@@ -50,7 +50,7 @@ html(lang='en')
               ul.dropdown-menu.dropdown-menu2
                 if cats
                   each cat, i in cats
-                    li(value="#{cat.cat}") #{cat.cat}
+                    li(value="#{cat._id}") #{cat.cat}
             input(type="hidden" name="cat" id="addquescat" value="")
             center
               button(type='submit') Add

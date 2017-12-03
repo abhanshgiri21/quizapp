@@ -28,7 +28,7 @@ var QuestionSchema = mongoose.Schema({
         required:true
     },
     cat:{
-        type:String,
+        type:mongoose.Schema.Types.ObjectId,
         required:true
     }
 });

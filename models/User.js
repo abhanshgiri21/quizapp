@@ -32,6 +32,9 @@ var UserSchema = mongoose.Schema({
         },
         quizid:{
             type: mongoose.Schema.Types.ObjectId
+        },
+        catid:{
+            type:mongoose.Schema.Types.ObjectId
         }
     }]
 });
@@ -39,7 +42,8 @@ var UserSchema = mongoose.Schema({
 var User = module.exports = mongoose.model('User',UserSchema);
 
 module.exports.getUserByUsername = function(username, callback){
-    User.findOne({username:username}, callback);
+    username1 = username.toUpperCase();
+    User.findOne({username:username1}, callback);
 }
 module.exports.comparePassword = function(password, candidatePassword, callback){
     bcrypt.compare(candidatePassword, password, function(err, isMatch){
@@ -58,6 +62,8 @@ module.exports.createUser = function (newUser, callback) {
     bcrypt.hash(newUser.password, 10, function(err, hash){
         if(err) throw err;
         newUser.password = hash;
+        var username = newUser.username.toUpperCase();
+        newUser.username = username;
         newUser.save(newUser, callback);
     });
     //newUser.save(newUser, callback);
@@ -72,28 +78,26 @@ module.exports.insertscores = function(id, newScore, callback){
     User.findOneAndUpdate({_id : id}, {$push : {'scores' : newScore}}, {safe:true, upsert:true}, callback);
 }
 
-module.exports.findBySubjectAndBranch = function(subject, branch, callback){
+module.exports.findByQuizidAndBranch = function(quizid, branch, callback){
     //this function was made to capitalize usernames
-    User.find({}, function(err, users){
-        console.log("inside first function");
-        for(var key in users){
-            if( true){
-                var user = users[key];
-                user.username = user.username.toUpperCase();
-                user.save(function(err){
-                    if(err)throw err;
-                });
-            }
+    // User.find({}, function(err, users){
+    //     console.log("inside first function");
+    //     for(var key in users){
+    //         if( true){
+    //             var user = users[key];
+    //             user.username = user.username.toUpperCase();
+    //             user.save(function(err){
+    //                 if(err)throw err;
+    //             });
+    //         }
             
-        }
-    });
+    //     }
+    // });
     User.find({
         branch:branch,
-        "scores.subject" : subject
+        "scores.quizid" : quizid
     },{
         username:1,
-        "scores.subject":1,
-        "scores.score":1,
-        "scores.$":1        
+        "scores.$":1
     }).sort('username').exec(callback);
 }

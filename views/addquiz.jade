@@ -32,7 +32,7 @@ html(lang='en')
             .addquizmenu
                 if cats
                     each cat, i in cats
-                        a.btn.btn-danger(href="/admin/addquiz/#{cat.cat}") #{cat.cat}
+                        a.btn.btn-danger(href="/admin/addquiz/#{cat.cat}/#{cat._id}") #{cat.cat}
                         br
         .row
         .login-block1

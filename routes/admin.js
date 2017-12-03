@@ -16,14 +16,13 @@ router.get('/viewques', function(req, res, next){
     Cat.getCat(req.user, function(err, cat){
         if(err){throw err};
         res.render('viewquesform', {cats: cat});
-    })
-    
+    });    
 });
 
-router.get('/viewques/:cat', function(req, res, next){
-    var cat = req.params.cat;
-    console.log(cat);
-    Ques.getQuesByCat(cat, function(err, ques){
+router.get('/viewques/:catid', function(req, res, next){
+    var catid = req.params.catid;
+    console.log(catid);
+    Ques.getQuesByCat(catid, function(err, ques){
         if(err){throw err};
         console.log(ques);
         res.render('adminque', {ques:ques})
@@ -134,7 +133,11 @@ router.post('/addques', function(req, res, next){
 });
 
 router.get('/addcat', function(req, res, next){
-    res.render('addcategory');
+    Cat.getCat(req.user, function(err, cats){
+        if(err)throw err;
+        res.render('addcategory',{cats:cats});
+    })
+    
 });
 
 router.post('/addcat', function(req, res, next){
@@ -163,10 +166,26 @@ router.post('/addcat', function(req, res, next){
 
 });
 
+router.delete('/deletecat/:id', function(req, res){
+    var id = req.params.id;
+    Cat.delCat(id, function(err, cat){
+        if(err)throw err;
+    })
+})
+
 router.get('/addquiz', function(req, res, next){
     Cat.getCat(req.user, function(err, cats){
         if(err) {throw err};
         Quiz.getActive(req.user, function(err, quizzes){
+            for(var key in cats){
+                for(var l in quizzes){
+                    if(cats[key].cat == quizzes[l].quizname){
+                        cats.splice(key, 1);
+                    }
+                }
+            }
+            console.log(cats);
+            console.log(quizzes);
             res.render('addquiz', {
                 cats : cats,
                 quizzes : quizzes
@@ -178,9 +197,10 @@ router.get('/addquiz', function(req, res, next){
 
 
 
-router.get('/addquiz/:quizname', function(req, res, next){
+router.get('/addquiz/:quizname/:catid', function(req, res, next){
+    var catid = req.params.catid;
     var quizname = req.params.quizname;
-    Ques.getQuesByCat(quizname, function(err, ques){
+    Ques.getQuesByCat(catid, function(err, ques){
         if(err){throw err};
         Branch.getBranch(function(err, branches){
             if(err)throw err;
@@ -188,7 +208,8 @@ router.get('/addquiz/:quizname', function(req, res, next){
             res.render('viewquiz', {
                 ques:ques,
                 topic:quizname,
-                branches:branches
+                branches:branches,
+                catid:catid
             });
         })        
     });
@@ -199,6 +220,8 @@ router.post('/addquiz', function(req, res, next){
     var quizname = req.body.quizname;
     var duration = req.body.duration || 30;
     var branch = req.body.branch;
+    var branch = req.body.branch;
+    var catid = req.body.catid;
 
     req.checkBody('quizname',' Quizname cannot be empty').notEmpty();
     
@@ -206,7 +229,8 @@ router.post('/addquiz', function(req, res, next){
         quizname: quizname,
         duration: duration,
         branch:branch,
-        admin:req.user._id
+        admin:req.user._id,
+        catid:catid
     });
     console.log(newQuiz);
     console.log("addquiz functoin is called");
@@ -326,7 +350,7 @@ router.get('/quesdocx', function(req, res, next){
     })
 })
 
-router.get('/quesdocx/:quizname/:branch', function(req, res){
+router.get('/quesdocx/:quizname/:quizid/:branch', function(req, res){
     // //creating a new document
     // var doc = new docx.Document();
     // var quizname = req.params.quizname;
@@ -355,9 +379,10 @@ router.get('/quesdocx/:quizname/:branch', function(req, res){
     // })
 
     var quizname = req.params.quizname;
+    var quizid = req.params.quizid;
     var branch = req.params.branch;
-    Ques.getQuesByCat(quizname, function(err, results){
-        User.findBySubjectAndBranch(quizname, branch, function(err, userresults){
+    Ques.getQuesByCat(quizid, function(err, results){
+        User.findByQuizidAndBranch(quizid, branch, function(err, userresults){
             if(err)throw err;
             var docx = officegen('docx');
             var q=1;
@@ -438,6 +463,19 @@ router.get('/quesdocx/:quizname/:branch', function(req, res){
                         }
                     }
                 },{
+                    val: "Date",
+                    opts: {
+                        align: "center",
+                        vAlign: "center",
+                        color:"000",
+                        cellColWidth: 20,
+                        b:true,
+                        sz: '20',
+                        shd: {
+                        fill: "ffffff"
+                        }
+                    }
+                },{
                     val: "Scores",
                     opts: {
                         align: "center",
@@ -497,6 +535,19 @@ router.get('/quesdocx/:quizname/:branch', function(req, res){
                             }
                         }
                     },{
+                        "val":formatDate(userresults[l].scores[0].date),
+                        "opts":{
+                            align: "center",
+                            vAlign: "center",
+                            color:"000",
+                            cellColWidth: 20,
+                            b:true,
+                            sz: '20',
+                            shd: {
+                            fill: "ffffff"
+                            }
+                        }
+                    },{
                         "val":userresults[l].scores[0].score,
                         "opts":{
                             align: "center",
@@ -509,7 +560,7 @@ router.get('/quesdocx/:quizname/:branch', function(req, res){
                             fill: "ffffff"
                             }
                         }
-                    }   
+                    }
                 ];
                 table.push(x);
                 q++;
@@ -537,5 +588,14 @@ router.get('/quesdocx/:quizname/:branch', function(req, res){
         });
     })
 })
+
+function formatDate(input) {
+    var date = new Date(input);
+    return [
+       ("0" + date.getDate()).slice(-2),
+       ("0" + (date.getMonth()+1)).slice(-2),
+       date.getFullYear()
+    ].join('/');
+}
 
 module.exports = router;

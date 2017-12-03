@@ -30,7 +30,7 @@ html(lang='en')
             br
             if quizzes
                 each quiz, i in quizzes
-                    a.btn.btn-danger(href="/admin/quesdocx/#{quiz.quizname}/#{quiz.branch}") #{quiz.quizname}
+                    a.btn.btn-danger(href="/admin/quesdocx/#{quiz.quizname}/#{quiz._id}/#{quiz.branch}") #{quiz.quizname}
                         p #{quiz.branch}
                     &nbsp;&nbsp;&nbsp;&nbsp;
                     br

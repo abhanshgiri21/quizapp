@@ -7,6 +7,10 @@ var QuizSchema = mongoose.Schema({
         type:String,
         required:true
     },
+    catid:{
+        type:mongoose.Schema.Types.ObjectId,
+        required:true
+    },
     duration:{
         type:Number,
         required:true
@@ -37,10 +41,10 @@ module.exports.getActiveQuizzes = function(user, callback){
     console.log(user.scores);
     if(user.scores.length > 0){
         for( var key in user.scores){
-            ignore.push(user.scores[0].subject);
+            ignore.push(user.scores[0].catid);
         }
     }
-    Quiz.find({quizname:{$nin : ignore}, branch:{$eq : user.branch}}, {}, callback);
+    Quiz.find({catid:{$nin : ignore}, branch:{$eq : user.branch}}, {}, callback);
 }
 
 module.exports.getActive = function(user, callback){

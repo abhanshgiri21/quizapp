@@ -202,15 +202,19 @@ html(lang='en')
             }
         }
         var quizid = localStorage.getItem("quizid");
+        var catid = localStorage.getItem("catid");
         console.log(quizid.replace(/['"]+/g, ''));
+        console.log(catid.replace(/['"]+/g, ''));
         console.log(score);
         quizid = quizid.replace(/['"]+/g, '');
+        catid = catid.replace(/['"]+/g, '');
         console.log(quizid);
+        console.log(catid);
         localStorage.clear();
         $.ajax({
             url : '/users/endquiz',
             type : "POST",
-            data : {score : score, subject : data[0].cat, quizid:quizid},
+            data : {score : score, subject : data[0].cat, quizid:quizid, catid:catid},
             success: function(data){
                 console.log("success function called");
                 console.log(data);
