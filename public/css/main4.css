@@ -100,12 +100,14 @@ body
 
 
 
-
 .navbar-brand
-{
-   font-size: 200%; 
+{   margin:20px;
+    background: transparent;
+    font-size:300%;
    font-weight: bold;
+   color:#f00;
 }
+
 
 .nav-link
 {

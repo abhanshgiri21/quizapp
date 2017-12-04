@@ -11,19 +11,7 @@ html(lang='en')
     script(src='/js/bootstrap.js')
     script(src='/js/main.js')
   body
-    nav.navbar.navbar-expand-sm.bg-dark.navbar-dark
-      p
-        a.navbar-brand(href='/admin/') QUIZAPP
-      ul.navbar-nav
-        li.nav-item
-          p
-            a.navbar-brand(href='/admin/') HOME
-        li.nav-item
-          p
-            a.nav-link(href='#') ABOUT
-        li.nav-item
-          p
-            a.nav-link(href='#') FAQ
+    h1.navbar-brand(href='/admin/') QUIZAPP
     .login-block2
       .container
         .row
@@ -51,6 +39,7 @@ html(lang='en')
                 if cats
                   each cat, i in cats
                     li(value="#{cat._id}") #{cat.cat}
+                      input(type='hidden', id='#{cat.cat}' ,value='#{cat._id}')
             input(type="hidden" name="cat" id="addquescat" value="")
             center
               button(type='submit') Add

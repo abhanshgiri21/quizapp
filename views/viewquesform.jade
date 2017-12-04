@@ -10,28 +10,17 @@ html(lang='en')
     script(src='/js/popper.js')
     script(src='/js/bootstrap.js')
   body
-    nav.navbar.navbar-expand-sm.bg-dark.navbar-dark
-      p
-        a.navbar-brand(href='#') QUIZAPP
-      ul.navbar-nav
-        li.nav-item
-          p
-            a.navbar-brand(href='/admin/') HOME
-        li.nav-item
-          p
-            a.nav-link(href='#') ABOUT
-        li.nav-item
-          p
-            a.nav-link(href='#') FAQ
+    h1.navbar-brand(href='/admin/') QUIZAPP
     .login-block2
       .container
         .row
           h1 
             h1#addquizheading  Select Category
           br
+        .row
           .dropdown
             .addquizmenu
                 if cats
-                    each cat, i in cats
+                    each cat, i in cats   
                         a.btn.btn-danger(href="/admin/viewques/#{cat._id}") #{cat.cat}
                         br

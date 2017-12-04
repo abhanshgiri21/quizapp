@@ -96,6 +96,9 @@ router.post('/addques', function(req, res, next){
     var ans = req.body.ans;
     var cat = req.body.cat;
 
+    console.log(req.body);
+
+
     var newQues =new Ques ({
         ques:ques,
         op1:op1,
@@ -280,10 +283,10 @@ router.get('/viewscores/:branch', function(req, res, next){
 })
 
 
-router.get('/viewscores/:branch/:subject', function(req, res){
-    var subject = req.params.subject;
+router.get('/viewscores/:branch/:quizid', function(req, res){
+    var quizid = req.params.quizid;
     var branch = req.params.branch;
-    User.findBySubjectAndBranch(subject, branch, function(err, results){
+    User.findByQuizidAndBranch(quizid, branch, function(err, results){
         if(err)throw err;
         console.log(results);
         res.render('adminresult', {results:results});

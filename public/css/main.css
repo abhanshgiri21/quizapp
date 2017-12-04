@@ -110,10 +110,13 @@ body
 }
 
 .navbar-brand
-{
-   font-size: 200%; 
+{   margin:20px;
+    background: transparent;
+    font-size:300%;
    font-weight: bold;
+   color:#f00;
 }
+
 
 .nav-link
 {
@@ -323,23 +326,19 @@ body
 }
 
 #dropdown-toggle1 ,#dropdown-toggle2{
-    width:40%;
+    width:25%;
 }
 
 .dropdown-menu1{
-    width:40%;
+    width:25%;
     cursor:pointer;
     text-align:center;
     font-size: 18px;
+    float: left;
 }
 .dropdown-menu2{
-    width:80%;
+    width:25%;
     cursor:pointer;
     text-align:center;
     font-size: 18px;
-}
-
-#dropdown-toggle1{
-    width:50%;
-    margin:20px;
 }

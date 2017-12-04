@@ -10,37 +10,23 @@ html(lang='en')
     script(src='/js/popper.js')
     script(src='/js/bootstrap.js')
   body
-    nav.navbar.navbar-expand-sm.bg-dark.navbar-dark
-      p
-        a.navbar-brand(href='/admin/') QUIZAPP
-      ul.navbar-nav
-        li.nav-item
-          p
-            a.navbar-brand(href='/admin/') HOME
-        li.nav-item
-          p
-            a.nav-link(href='#') ABOUT
-        li.nav-item
-          p
-            a.nav-link(href='#') FAQ
+    nav.nav.navbar-nav.navbar-inverse
+      h1.navbar-brand(href='/admin/') QUIZAPP
     .login-block2
-      .container
-        .row
-          p
-            h1 Add Category
-        .row
-          form(action='/admin/addcat', method='post')
-            .form-group
-              input#que.form-control(name='cat', type='text', value='', placeholder='Enter Category')
-            center
-              button.btn.btn-danger(type='submit') Add
-        .login-block1
-          h1 Categories already present
+      h1 Add Category
+      .row#catform
+        form(action='/admin/addcat', method='post')
+          .form-group
+            input#que.form-control(name='cat', type='text', value='', placeholder='Enter Category')
+          center
+            button.btn.btn-danger(type='submit') Add
+      .login-block1
+        h1 Categories already present
+        br
+        each cat, i in cats
+          h3 #{cat.cat}
+          a.btn.btn-danger.removecat(data-id="#{cat._id}" href="") Delete
           br
-          each cat, i in cats
-            h3 #{cat.cat}
-            a.btn.btn-danger.removecat(data-id="#{cat._id}" href="") Delete
-            br
   script(type='text/javascript').
     $(document).ready(function(){
         $('.removecat').click(function(e){

@@ -10,38 +10,27 @@ html(lang='en')
     script(src='/js/bootstrap.js')
     link(rel='stylesheet', href='/css/main2.css')
   body
-    nav.navbar.navbar-expand-sm.bg-dark.navbar-dark
-      p
-        a.navbar-brand(href='#') QUIZAPP
-      ul.navbar-nav
-        li.nav-item
-          p
-            a.navbar-brand(href='/admin/') HOME
-        li.nav-item
-          p
-            a.nav-link(href='#') ABOUT
-        li.nav-item
-          p
-            a.nav-link(href='#') FAQ
+    h1.navbar-brand(href='/admin/') QUIZAPP
     .login-block2
       .container
         .row
           each que, i in ques
-            .dropdown#viewquesdropdown
-              button.dropbtn
-                | #{que.ques} &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-                a(href="#" ,class="btn btn-danger removeQues" data-id="#{que._id}" ) Delete
-              .dropdown-content
-                p #{que.op1}
-                br
-                p #{que.op2}
-                br
-                p #{que.op3}
-                br
-                p #{que.op4}
-                br
-                p ans is option :  #{que.ans}
-            br
+            .col-md-9          
+              .dropdown#viewquesdropdown
+                button.dropbtn
+                  | Q#{i+1}) #{que.ques} &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                .dropdown-content
+                  p #{que.op1}
+                  br
+                  p #{que.op2}
+                  br
+                  p #{que.op3}
+                  br
+                  p #{que.op4}
+                  br
+                  p ans is option :  #{que.ans}
+            .col-md-2
+              a(href="#" ,class="btn btn-danger removeQues" data-id="#{que._id}" ) Delete
   script(type='text/javascript').
     $(document).ready(function(){
         $('.removeQues').click(function(e){

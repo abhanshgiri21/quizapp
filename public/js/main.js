@@ -8,7 +8,8 @@ $(document).ready(function(){
     $('.dropdown-menu2 li').click(function(){
         var y = $(this).text();
         document.getElementById("dropdown-toggle2").innerHTML = y;
-        document.getElementById("addquescat").value = y;
+        var z = document.getElementById(y).value;
+        document.getElementById("addquescat").value = z;
     });
 
 });

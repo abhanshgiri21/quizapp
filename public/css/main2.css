@@ -24,7 +24,7 @@ body
     color: #000;
     font-size: 25px;
     text-transform: uppercase;
-    margin-top: 0;
+    margin-top: 0px;
     margin-bottom: 15px;
 }
 
@@ -68,8 +68,8 @@ body
 .dropbtn {
     background-color: white;
     color: black;
-    padding: 16px;
-    font-size: 16px;
+    padding: 14px;
+    font-size: 18px;
     border: none;
     cursor: pointer;    
 }
@@ -109,9 +109,11 @@ body
 
 
 .navbar-brand
-{
-   font-size: 200%; 
+{   margin:20px;
+    background: transparent;
+    font-size:300%;
    font-weight: bold;
+   color:#f00;
 }
 
 
@@ -124,6 +126,8 @@ body
 
 .btn-danger{
     background-color:#f00;
+    margin-left: 30px;
+    margin-bottom: 10px;
 }
 
 .btn-danger:hover{
@@ -136,6 +140,7 @@ body
     border:2px solid #f00;
     color:#f00;
     background:#fff;
+    margin:15px;
 }
 
 #dropdown-toggle1{
@@ -149,4 +154,10 @@ body
 
 .dropdown-menu2 li{
     cursor:pointer;
+}
+
+#que{
+    width: 300px;
+    height: 45px;
+    text-align: center;
 }
